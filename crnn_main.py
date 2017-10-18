@@ -104,6 +104,10 @@ crnn.apply(weights_init)
 if opt.crnn != '':
     print('loading pretrained model from %s' % opt.crnn)
     pre_trainmodel = torch.load(opt.crnn)
+    pre_trainmodel_rename = collections.OrderedDict()
+    for k, v in pre_trainmodel.items():
+        name = k[7:]
+        pre_trainmodel_rename[name] = v
     model_dict = crnn.state_dict()
     weig1 = 'rnn.1.embedding.weight'
     bias1 = 'rnn.1.embedding.bias'
@@ -175,7 +179,7 @@ def val(net, dataset, criterion, max_iter=100):
         loss_avg.add(cost)
 
         _, preds = preds.max(2)
-        preds = preds.squeeze(2)
+        #preds = preds.squeeze(2)
         preds = preds.transpose(1, 0).contiguous().view(-1)
         sim_preds = converter.decode(preds.data, preds_size.data, raw=False)
         for pred, target in zip(sim_preds, cpu_texts):
