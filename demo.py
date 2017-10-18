@@ -14,7 +14,8 @@ img_path = './data/image33.jpg'
 alphabet = u'\'ACIMRey万下依口哺摄次状璐癌草血运重'
 #print(alphabet)
 nclass = len(alphabet) + 1
-model = crnn.CRNN(32, 1, nclass, 128).cuda()
+#model = crnn.CRNN(32, 1, nclass, 128).cuda()
+model = torch.nn.DataParallel(crnn.CRNN(32, 1, nclass, 256)).cuda()
 print('loading pretrained model from %s' % model_path)
 pre_model = torch.load(model_path)
 for k,v in pre_model.items():
@@ -33,7 +34,7 @@ model.eval()
 preds = model(image)
 
 _, preds = preds.max(2)
-preds = preds.squeeze(2)
+#preds = preds.squeeze(2)
 preds = preds.transpose(1, 0).contiguous().view(-1)
 
 preds_size = Variable(torch.IntTensor([preds.size(0)]))
